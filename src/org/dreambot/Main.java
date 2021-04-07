@@ -1,8 +1,14 @@
 package org.dreambot;
 
+import org.dreambot.api.methods.skills.Skill;
+import org.dreambot.api.methods.skills.SkillTracker;
 import org.dreambot.api.script.AbstractScript;
 import org.dreambot.api.script.Category;
 import org.dreambot.api.script.ScriptManifest;
+import org.dreambot.api.utilities.Timer;
+import org.dreambot.behaviour.FighterBranch;
+import org.dreambot.behaviour.fighting.Fight;
+import org.dreambot.framework.Branch;
 import org.dreambot.framework.Tree;
 import org.dreambot.paint.CustomPaint;
 import org.dreambot.paint.PaintInfo;
@@ -12,17 +18,21 @@ import java.awt.*;
 @ScriptManifest(category = Category.COMBAT, name = "casBro", author = "Potato", version = 1)
 public class Main extends AbstractScript implements PaintInfo {
 
-
     private final Tree<Main> tree = new Tree<>();
+
+    private Branch<Main> fighterBranch;
+
+
 
     @Override
     public void onStart() {
+        SkillTracker.start(Skill.STRENGTH);
+        fighterBranch = new FighterBranch();
 
-    }
+        tree.addBranches(
+                fighterBranch.addLeafs(new Fight())
 
-    @Override
-    public void onStart(String... params) {
-
+        );
     }
 
     @Override
@@ -35,6 +45,8 @@ public class Main extends AbstractScript implements PaintInfo {
     public String[] getPaintInfo() {
         return new String[] {
                 getManifest().name() + " V" + getManifest().version(),
+                "Runtime: " + CUSTOM_PAINT.getRuntimeString(),
+                "Strength Gained: " + SkillTracker.getGainedExperience(Skill.STRENGTH)
         };
     }
 
